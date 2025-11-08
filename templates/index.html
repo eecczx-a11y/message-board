@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>留言告示板</title>
+  <style>
+    body { font-family: sans-serif; width: 600px; margin: auto; background: #f9f9f9; }
+    h1 { text-align: center; }
+    .msg { background: white; margin: 10px 0; padding: 10px; border-radius: 6px; }
+    input, textarea { width: 100%; margin: 5px 0; padding: 8px; }
+    button { padding: 8px 16px; }
+  </style>
+</head>
+<body>
+  <h1>留言告示板</h1>
+
+  <div>
+    <input id="name" placeholder="你的名字 (可留空)">
+    <textarea id="message" rows="3" placeholder="写下留言..."></textarea>
+    <button onclick="sendMessage()">提交</button>
+  </div>
+
+  <h3>所有留言：</h3>
+  <div id="list">
+    {% for msg in messages %}
+      <div class="msg"><b>{{ msg.name }}</b>：{{ msg.message }}<br><small>{{ msg.time }}</small></div>
+    {% endfor %}
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const name = document.getElementById('name').value;
+      const message = document.getElementById('message').value;
+      if (!message.trim()) { alert('内容不能为空'); return; }
+      const res = await fetch('/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, message })
+      });
+      if (res.ok) location.reload();
+      else alert('发送失败');
+    }
+  </script>
+</body>
+</html>
